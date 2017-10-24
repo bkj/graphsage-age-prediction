@@ -20,8 +20,16 @@ from torch.nn import functional as F
 def loss_fn(preds, targets):
     return F.l1_loss(preds, targets)
 
+def corr(a, b):
+    a -= a.mean()
+    b -= b.mean()
+    return np.mean(a * b) / (np.std(a) * np.std(b))
+
 def metric_fn(y_true, y_pred):
-    return np.abs(y_true - y_pred).mean()
+    return {
+        "mae" : np.abs(y_true - y_pred).mean(),
+        "corr" : corr(y_true, y_pred),
+    }
 
 # --
 # Problem definition
