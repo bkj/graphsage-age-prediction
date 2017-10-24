@@ -12,3 +12,4 @@ gunzip soc-pokec-relationships.txt.gz
 gunzip soc-pokec-profiles.txt.gz
 
 cat soc-pokec-profiles.txt  | cut -d$'\t' -f1,8 | sort -k1 -n > soc-pokec-ages.tsv
+

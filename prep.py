@@ -4,9 +4,12 @@
     prep.py
 """
 
+from __future__ import print_function
+
 import os
 import sys
 import h5py
+import argparse
 import numpy as np
 import pandas as pd
 import networkx as nx
@@ -58,8 +61,9 @@ def make_adjacency(G, folds, max_degree, train=True):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--inpath', type=str, default='../data/pokec/')
-    parser.add_argument('--outpath', type=str, default='../data/pokec/problem.h5')
+    parser.add_argument('--inpath', type=str, default='./data/pokec/')
+    parser.add_argument('--outpath', type=str, default='./data/pokec/problem.h5')
+    parser.add_argument('--train-size', type=float, default=0.5)
     parser.add_argument('--max-degree', type=int, default=128)
     return parser.parse_args()
 
@@ -68,24 +72,25 @@ if __name__ == "__main__":
     args = parse_args()
     
     # --
-    # Load data
-    
+    print('load data from %s' % args.inpath, file=sys.stderr)
     ages  = load_ages(os.path.join(args.inpath, 'soc-pokec-ages.tsv'))
     edges = pd.read_csv(os.path.join(args.inpath, 'soc-pokec-relationships.txt'), header=None, sep='\t')
     edges.columns = ('src', 'trg')
+    
+    # --
+    print('clean data', file=sys.stderr)
     
     # Remove orphans, etc
     edges = edges[edges.src.isin(ages.id)]
     edges = edges[edges.trg.isin(ages.id)]
     ages  = ages[ages.id.isin(edges.src) | ages.id.isin(edges.trg)]
     
-    # Create unique id
     ages['uid'] = np.arange(ages.shape[0])
     
-    # Use 
     edges = pd.merge(edges, ages, left_on='src', right_on='id')
     edges = edges[['uid', 'trg']]
     edges.columns = ('src', 'trg')
+    
     edges = pd.merge(edges, ages, left_on='trg', right_on='id')
     edges = edges[['src', 'uid']]
     edges.columns = ('src', 'trg')
@@ -93,17 +98,15 @@ if __name__ == "__main__":
     ages = ages[['uid', 'age']]
     
     # --
-    # Format data
-    
+    print('format data for graphsage', file=sys.stderr)
     targets = np.array(ages.age).astype(float).reshape(-1, 1)
-    folds = np.random.choice(['train', 'val'], targets.shape[0], p=[0.8, 0.2])
+    folds = np.random.choice(['train', 'val'], targets.shape[0], p=[args.train_size, 1 - args.train_size])
     
     G = nx.from_edgelist(np.array(edges))
     adj = make_adjacency(G, folds, args.max_degree, train=False) # Adds dummy node
     
     # --
-    # Write data
-    
+    print('write data to %s' % args.outpath, file=sys.stderr)
     problem = {
         "adj" : adj,
         "targets" : targets,
