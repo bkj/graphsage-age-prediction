@@ -2,6 +2,10 @@
 
 Simplified version of https://github.com/bkj/pytorch-graphsage w/ specific application to age prediction in the POKEC benchmark dataset, per [1]
 
+#### Installation
+
+Install `pytorch==0.2.0`, per instructions at: http://pytorch.org/
+
 #### Usage
 
 ```
@@ -13,13 +17,13 @@ Simplified version of https://github.com/bkj/pytorch-graphsage w/ specific appli
 python prep.py
 
 # Train model
-time python ./train.py --problem-path ./data/pokec/problem.h5
+python ./train.py --problem-path ./data/pokec/problem.h5
 
 ```
 
-##### LICENSE
+#### LICENSE
 MIT
 
-##### References
+#### References
 
 [1] http://perozzi.net/publications/15_www_age.pdf

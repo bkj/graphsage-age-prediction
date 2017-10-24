@@ -30,7 +30,7 @@ def load_ages(path):
     return ages
 
 
-def make_adjacency(G, folds, max_degree, train=True):
+def make_adjacency(G, folds, max_degree):
     
     all_nodes = np.array(G.nodes())
     
@@ -38,15 +38,8 @@ def make_adjacency(G, folds, max_degree, train=True):
     n_nodes = len(all_nodes)
     adj = (np.zeros((n_nodes + 1, max_degree)) + n_nodes).astype(int)
     
-    if train:
-        # only look at nodes in training set
-        all_nodes = all_nodes[folds == 'train']
-    
     for node in all_nodes:
-        neibs = np.array(G.neighbors(node))
-        
-        if train:
-            neibs = neibs[folds[neibs] == 'train']
+        neibs = np.array(list(G.neighbors(node)))
         
         if len(neibs) > 0:
             if len(neibs) > max_degree:
@@ -103,7 +96,7 @@ if __name__ == "__main__":
     folds = np.random.choice(['train', 'val'], targets.shape[0], p=[args.train_size, 1 - args.train_size])
     
     G = nx.from_edgelist(np.array(edges))
-    adj = make_adjacency(G, folds, args.max_degree, train=False) # Adds dummy node
+    adj = make_adjacency(G, folds, args.max_degree) # Adds dummy node
     
     # --
     print('write data to %s' % args.outpath, file=sys.stderr)
