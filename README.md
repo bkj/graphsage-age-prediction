@@ -6,6 +6,14 @@ Simplified version of https://github.com/bkj/pytorch-graphsage w/ specific appli
 
 Install `pytorch==0.2.0`, per instructions at: http://pytorch.org/
 
+Then do
+
+```
+pip install -r requirements.txt
+```
+
+Exact versions of many of these modules may not actually matter.
+
 #### Usage
 
 ```
