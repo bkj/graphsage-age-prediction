@@ -11,6 +11,7 @@ from functools import partial
 
 import torch
 from torch import nn
+from torch.autograd import Variable
 from torch.nn import functional as F
 
 # --
@@ -58,8 +59,6 @@ class NodeEmbeddingPrep(nn.Module):
 class MeanAggregator(nn.Module):
     def __init__(self, input_dim, output_dim, activation, combine_fn=lambda x: torch.cat(x, dim=1)):
         super(MeanAggregator, self).__init__()
-        
-        print('MeanAggregator', input_dim, output_dim)
         
         self.fc_x = nn.Linear(input_dim, output_dim, bias=False)
         self.fc_neib = nn.Linear(input_dim, output_dim, bias=False)
@@ -109,10 +108,8 @@ class GSSupervised(nn.Module):
         
         # --
         # Define network
-        print('ok 1')
         self.prep = NodeEmbeddingPrep(n_nodes=n_nodes)
         input_dim = self.prep.output_dim
-        print('ok 2', input_dim)
         agg_layers = []
         for spec in layer_specs:
             agg = MeanAggregator(

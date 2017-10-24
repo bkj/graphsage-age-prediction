@@ -76,8 +76,9 @@ class NodeProblem(object):
         if shuffle:
             idx = np.random.permutation(idx)
         
-        for chunk in np.array_split(idx, idx.shape[0] // batch_size + 1):
+        n_chunks = idx.shape[0] // batch_size + 1
+        for chunk_idx, chunk in enumerate(np.array_split(idx, n_chunks)):
             mids = nodes[chunk]
             targets = self.targets[mids]
             mids, targets = self.__batch_to_torch(mids, targets)
-            yield mids, targets
+            yield mids, targets, chunk_idx / n_chunks
