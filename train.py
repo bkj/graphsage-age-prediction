@@ -95,10 +95,10 @@ if __name__ == "__main__":
         
         # Evaluate
         _ = model.eval()
-        print('-- Evaluation --', file=sys.stderr)
+        print()
         print({
             "epoch" : epoch,
             "train_metric" : problem.metric_fn(to_numpy(targets), to_numpy(preds)),
             "val_metric" : evaluate(model, problem),
         })
-        print('--', file=sys.stderr)
+        print()
